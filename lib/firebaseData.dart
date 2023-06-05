@@ -1,3 +1,4 @@
+import 'package:firebase/pop.dart';
 import 'package:firebase/user_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -13,24 +14,47 @@ class _HomeScreenState extends State<HomeScreen> {
   DatabaseReference databaseReference =
       FirebaseDatabase.instance.ref().child('data_node').child('users');
 
+  List<UserModel> listData = [];
+  @override
+  void initState() {
+    getDataFromFirebase();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showPopUp(context, databaseReference);
+        },
+        child: Text('+'),
+      ),
       body: SafeArea(
-          child: Column(
-        children: [
-          ElevatedButton(
-              onPressed: () {
-                addDataToFirebase();
+          child: ListView.separated(
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Material(
+                    child: InkWell(
+                      onTap: () {
+                        databaseReference.child(listData[index].name!).remove();
+                      },
+                      child: Column(
+                        children: [
+                          Text(
+                              'Your name - ${listData[index].name.toString()}'),
+                          Text('Age - ${listData[index].age.toString()}')
+                        ],
+                      ),
+                    ),
+                  ),
+                );
               },
-              child: Text('Add Data')),
-          ElevatedButton(
-              onPressed: () {
-                getDataFromFirebase();
+              separatorBuilder: (context, index) {
+                return Divider();
               },
-              child: Text('Get Data'))
-        ],
-      )),
+              itemCount: listData.length)),
     );
   }
 
@@ -63,17 +87,18 @@ class _HomeScreenState extends State<HomeScreen> {
     //   print(newUserModel.model);
     //   print(userList);
     // });
-
-    List<UserModel> listData = [];
+    List<UserModel> listDa1 = [];
     databaseReference.onValue.listen((event) {
+      listDa1.clear();
+      listData.clear();
       for (final element in event.snapshot.children) {
         UserModel model = UserModel.fromJson(element.value as Map);
-        listData.add(model);
+        listDa1.add(model);
       }
 
-      print(listData.toList());
-
-      //  print(event.snapshot.value.toString());
+      setState(() {
+        listData.addAll(listDa1);
+      });
     });
   }
 }
