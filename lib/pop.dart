@@ -2,9 +2,22 @@ import 'package:firebase/user_model.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
-void showPopUp(BuildContext context, DatabaseReference databaseReference) {
+void showPopUp(BuildContext context, DatabaseReference databaseReference,
+    String? name, String? age, bool? isEdit) {
   final nameController = TextEditingController();
   final ageController = TextEditingController();
+  final isEditValue = isEdit;
+
+  if (name != "") {
+    nameController.text = name!;
+    ageController.text = age!;
+  }
+  String buttonText;
+  if (isEdit!) {
+    buttonText = "Update";
+  } else {
+    buttonText = "Click here to Add";
+  }
   showDialog(
       context: context,
       builder: (ctx) {
@@ -45,7 +58,15 @@ void showPopUp(BuildContext context, DatabaseReference databaseReference) {
                           Navigator.of(context).pop();
                         }
                       },
-                      child: Text('Click here to Add'))
+                      child: Text(buttonText)),
+                  if (isEditValue!)
+                    ElevatedButton.icon(
+                        onPressed: () {
+                          databaseReference.child(name!).remove();
+                          Navigator.of(context).pop();
+                        },
+                        icon: Icon(Icons.delete),
+                        label: Text('Delete'))
                 ],
               ),
             ),

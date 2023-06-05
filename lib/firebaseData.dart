@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showPopUp(context, databaseReference);
+          showPopUp(context, databaseReference, "", "", false);
         },
         child: Text('+'),
       ),
@@ -38,7 +38,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Material(
                     child: InkWell(
                       onTap: () {
-                        databaseReference.child(listData[index].name!).remove();
+                        showPopUp(
+                            context,
+                            databaseReference,
+                            listData[index].name,
+                            listData[index].age.toString(),
+                            true);
+                        // databaseReference.child(listData[index].name!).remove();
                       },
                       child: Column(
                         children: [
